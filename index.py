@@ -1,8 +1,8 @@
 import yt_dlp
 import os
 
-# URL del video de YouTube que quieres descargar
-video_url = 'https://www.youtube.com/watch?v=4VxdufqB9zg'  # Reemplaza con el ID real del video
+# Ruta del archivo de texto que contiene las URLs
+urls_file = 'urls.txt'  # Cambia esto al nombre de tu archivo de texto
 
 # Crear la carpeta "musicas" si no existe
 output_dir = 'musicas'
@@ -16,11 +16,19 @@ ydl_opts = {
         'preferredcodec': 'mp3',  # Convertir a MP3
         'preferredquality': '192',  # Calidad de audio (en kbps)
     }],
-    'outtmpl': os.path.join(output_dir, '%(title)s.%(ext)s'),  # Almacenar en la carpeta "musicas" con el título del video
+    'outtmpl': os.path.join(output_dir, '%(title)s.%(ext)s'),  # Almacenar en la carpeta "musicas"
 }
 
-# Descargar el video
-with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-    ydl.download([video_url])
+# Leer las URLs desde el archivo de texto
+with open(urls_file, 'r') as file:
+    urls = file.readlines()
 
-print("Descarga completa!")
+# Descargar cada video
+for url in urls:
+    url = url.strip()  # Eliminar espacios en blanco y saltos de línea
+    if url:  # Verificar que la URL no esté vacía
+        print(f"Descargando: {url}")
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([url])
+
+print("Descargas completas!")
