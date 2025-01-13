@@ -1,11 +1,12 @@
 import yt_dlp
 import os
+import sys
 
 # Ruta del archivo de texto que contiene las URLs
 urls_file = 'urls.txt'  # Cambia esto al nombre de tu archivo de texto
 
 # Crear la carpeta "musicas" si no existe
-output_dir = 'musicas'
+output_dir = f'musicas/{sys.argv[1]}'
 os.makedirs(output_dir, exist_ok=True)
 
 # Opciones de descarga
