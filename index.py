@@ -2,34 +2,41 @@ import yt_dlp
 import os
 import sys
 
-# Ruta del archivo de texto que contiene las URLs
-urls_file = 'urls.txt'  # Cambia esto al nombre de tu archivo de texto
+# Archivo de URLs
+urls_file = 'urls.txt'  # Cambia si usas otro archivo
 
-# Crear la carpeta "musicas" si no existe
+# Validar argumento de carpeta de salida
+if len(sys.argv) < 2:
+    print("Uso: python index.py <nombre_de_carpeta>")
+    sys.exit(1)
+
 output_dir = f'musicas/{sys.argv[1]}'
 os.makedirs(output_dir, exist_ok=True)
 
-# Opciones de descarga
 ydl_opts = {
-    'format': 'bestaudio/best',  # Mejor calidad de audio
+    'format': 'bestaudio/best',
+    'cookiesfrombrowser': ('chrome',),  # Usar cookies de navegador para autenticación
     'postprocessors': [{
-        'key': 'FFmpegExtractAudio',  # Usar FFmpeg para extraer el audio
-        'preferredcodec': 'mp3',  # Convertir a MP3
-        'preferredquality': '192',  # Calidad de audio (en kbps)
+        'key': 'FFmpegExtractAudio',
+        'preferredcodec': 'mp3',
+        'preferredquality': '192',
     }],
-    'outtmpl': os.path.join(output_dir, '%(title)s.%(ext)s'),  # Almacenar en la carpeta "musicas"
+    'outtmpl': os.path.join(output_dir, '%(playlist_title)s/%(title)s.%(ext)s'),  # Carpeta por playlist, si aplica
+    # 'noplaylist': False por defecto, dejamos que descargue listas si la URL es una playlist
+    'ignoreerrors': True,  # Continúa con siguientes URLs si hay error
 }
 
-# Leer las URLs desde el archivo de texto
 with open(urls_file, 'r') as file:
-    urls = file.readlines()
+    urls = [line.strip() for line in file if line.strip()]
 
-# Descargar cada video
 for url in urls:
-    url = url.strip()  # Eliminar espacios en blanco y saltos de línea
-    if url:  # Verificar que la URL no esté vacía
-        print(f"Descargando: {url}")
+    print(f"Descargando: {url}")
+    try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download([url])
+    except Exception as e:
+        print(f"Error al descargar {url}: {e}")
+        continue
 
 print("Descargas completas!")
+

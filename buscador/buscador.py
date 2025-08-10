@@ -47,7 +47,7 @@ print(df.head())
 # Preguntar en qué formato guardar
 formato = input("\n¿En qué formato quieres guardar el archivo? (csv/txt): ").strip().lower()
 nombre_base = f"canciones_{artista_nombre.lower().replace(' ', '_')}"
-carpeta = "/sdcard/Music/descarga-de-mp3/buscador"
+carpeta = "/home/dnavarrete/Escritorio/descarga-de-mp3/buscador"
 ruta = f"{carpeta}/{nombre_base}.{formato}"
 
 # Crear carpeta si no existe
