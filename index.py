@@ -1,6 +1,7 @@
 import yt_dlp
 import os
 import sys
+import traceback
 
 # Archivo de URLs
 urls_file = 'urls.txt'  # Cambia si usas otro archivo
@@ -15,28 +16,32 @@ os.makedirs(output_dir, exist_ok=True)
 
 ydl_opts = {
     'format': 'bestaudio/best',
-    'cookiesfrombrowser': ('chrome',),  # Usar cookies de navegador para autenticación
+    #'cookiesfrombrowser': ('chrome',),
+    'cookiefile': 'www.youtube.com_cookies.txt',  # ← nombre correcto en Python API
     'postprocessors': [{
         'key': 'FFmpegExtractAudio',
         'preferredcodec': 'mp3',
         'preferredquality': '192',
     }],
-    'outtmpl': os.path.join(output_dir, '%(playlist_title)s/%(title)s.%(ext)s'),  # Carpeta por playlist, si aplica
-    # 'noplaylist': False por defecto, dejamos que descargue listas si la URL es una playlist
-    'ignoreerrors': True,  # Continúa con siguientes URLs si hay error
+    'outtmpl': os.path.join(output_dir, '%(playlist_title)s/%(title)s.%(ext)s'),
+    'ignoreerrors': True,  # Esto ayuda, pero no es suficiente en todos los casos
+    'quiet': False,
+    'no_warnings': True,
 }
 
-with open(urls_file, 'r') as file:
+# Leer URLs desde archivo
+with open(urls_file, 'r', encoding='utf-8') as file:
     urls = [line.strip() for line in file if line.strip()]
 
 for url in urls:
-    print(f"Descargando: {url}")
+    print(f"\n🔽 Descargando: {url}")
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download([url])
     except Exception as e:
-        print(f"Error al descargar {url}: {e}")
+        print(f"❌ Error al descargar {url}: {e}")
+        traceback.print_exc()  # Opcional: muestra detalles del error
         continue
 
-print("Descargas completas!")
+print("\n✅ Descargas completas!")
 
