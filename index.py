@@ -14,10 +14,9 @@ if len(sys.argv) < 2:
 output_dir = f'musicas/{sys.argv[1]}'
 os.makedirs(output_dir, exist_ok=True)
 
+# Opciones para yt-dlp
 ydl_opts = {
     'format': 'bestaudio/best',
-    #'cookiesfrombrowser': ('chrome',),
-    'cookiefile': 'www.youtube.com_cookies.txt',  # ← nombre correcto en Python API
     'postprocessors': [{
         'key': 'FFmpegExtractAudio',
         'preferredcodec': 'mp3',
@@ -27,6 +26,8 @@ ydl_opts = {
     'ignoreerrors': True,  # Esto ayuda, pero no es suficiente en todos los casos
     'quiet': False,
     'no_warnings': True,
+    'ratelimit': None,  # Elimina el límite de velocidad si está configurado
+    'throttled_rate_limit': None,  # Evita la espera extra entre descargas
 }
 
 # Leer URLs desde archivo
